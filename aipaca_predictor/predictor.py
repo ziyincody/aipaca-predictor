@@ -1,7 +1,7 @@
-from dnn import DNN
-from layers import PoolLayer
-from layers import ConvLayer
-from layers import DenseLayer
+from aipaca_predictor.dnn import DNN
+from aipaca_predictor.layers import PoolLayer
+from aipaca_predictor.layers import ConvLayer
+from aipaca_predictor.layers import DenseLayer
 import requests
 import json
 
@@ -19,7 +19,7 @@ def to_predict(model, batch_size: int, gpu_name: str, optimizer: str = "adam") -
         "gpu_name": gpu_name,
     }
 
-    url = "http://127.0.0.1:8000/predict"
+    url = "http://35.182.126.77:8000/predict"
 
     resp = requests.post(url, data=json.dumps(data))
 

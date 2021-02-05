@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.1"
+VERSION = "0.0.4"
 DESCRIPTION = "Aipaca Model Time Predictor"
 LONG_DESCRIPTION = "Easily predict model training time (Currently Keras Only)"
 

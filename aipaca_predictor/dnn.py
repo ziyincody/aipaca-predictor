@@ -1,7 +1,3 @@
-import os
-import json
-
-
 class DNN(dict):
     """Class for deep neural network architecture"""
 
