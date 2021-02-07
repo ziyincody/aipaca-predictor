@@ -41,26 +41,30 @@ def to_predict(model, batch_size: int, optimizer: str = "adam") -> int:
 
 
 def parse_cnn(model_layers):
-    input_shape = vars(model_layers[0])["_batch_input_shape"]
-    dimension = input_shape[-1]
-    size = input_shape[1]
-    previous_channel = dimension
+    input_shape = model_layers[0]._batch_input_shape
+    # Image input
+    if len(input_shape) == 4:
+        size = input_shape[1]
+    # Vector or flattened image
+    else:
+        size = input_shape[0]
+    num_channel = input_shape[-1]
+    previous_channel = num_channel
     previous_output_size = size
 
-    dnn = DNN(dimension, size)
+    dnn = DNN(num_channel, size)
     for layer in model_layers[1:]:
         layer_class_name = layer.__class__.__name__
         layer_name = layer.name
-        layer_dict = vars(layer)
         if layer_class_name == "MaxPooling2D":
             layer = PoolLayer(
-                layer=layer_dict,
+                layer=layer,
                 input_size=previous_output_size,
                 channels_in=previous_channel,
             )
         elif layer_class_name == "Conv2D":
             layer = ConvLayer(
-                layer=layer_dict,
+                layer=layer,
                 input_size=previous_output_size,
                 channels_in=previous_channel,
             )
@@ -68,7 +72,7 @@ def parse_cnn(model_layers):
             continue
         elif layer_class_name == "Dense":
             layer = DenseLayer(
-                layer=layer_dict,
+                layer=layer,
                 input_size=previous_output_size,
                 channels_in=previous_channel,
             )

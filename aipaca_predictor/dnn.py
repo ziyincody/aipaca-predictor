@@ -30,12 +30,6 @@ class DNN(dict):
 
         num_layers = len(self["layers"])
         new_layer = num_layers + 1
-        if num_layers == 0:
-            input_dimension = self["input"]["dimension"]
-            input_size = self["input"]["size"]
-        else:
-            input_dimension = self["layers"][num_layers]["channels_out"]
-            input_size = self["layers"][num_layers]["output_size"]
 
         self["layers"][new_layer] = {}  # Create new layer
         self["layers"][new_layer]["name"] = layer_name

@@ -1,14 +1,17 @@
 from typing import Dict
 from typing import Any
+from tensorflow.python.keras.layers.core import Dense
+from tensorflow.python.keras.layers.convolutional import Conv2D
+from tensorflow.python.keras.layers.pooling import MaxPooling2D
 
 
 class PoolLayer(object):
-    def __init__(self, layer: Dict[str, Any], input_size: int, channels_in: int):
-        self.type: str = "Max_pool"
+    def __init__(self, layer: MaxPooling2D, input_size: int, channels_in: int):
+        self.type: str = layer.pool_function.__name__
         # Assume strides are symmetric
-        self.strides: int = layer["strides"][0]
-        self.pool_size: int = layer["pool_size"][0]
-        self.padding: str = layer["padding"]
+        self.strides: int = layer.strides[0]
+        self.pool_size: int = layer.pool_size[0]
+        self.padding: str = layer.padding
         self.channels_in: int = channels_in
         self.channels_out: int = channels_in
         self.output_size: int = _get_conv_output_size(
@@ -20,16 +23,16 @@ class PoolLayer(object):
 
 
 class ConvLayer(object):
-    def __init__(self, layer: Dict[str, Any], input_size: int, channels_in: int):
+    def __init__(self, layer: Conv2D, input_size: int, channels_in: int):
         self.type: str = "Convolution"
         self.mat_size: float = float(input_size)
-        self.kernel_size: int = layer["kernel_size"][0]
+        self.kernel_size: int = layer.kernel_size[0]
         self.channels_in: int = channels_in
-        self.channels_out: int = layer["kernel"].shape[-1]
-        self.strides: int = layer["strides"][0]
-        self.padding: int = layer["padding"]
-        self.use_bias: bool = layer["use_bias"]
-        self.activation = _get_activation_name(layer["activation"])
+        self.channels_out: int = layer.kernel.shape[-1]
+        self.strides: int = layer.strides[0]
+        self.padding: str = layer.padding
+        self.use_bias: bool = layer.use_bias
+        self.activation = _get_activation_name(layer.activation)
         self.output_size: int = _get_conv_output_size(
             input_size=input_size,
             kernel_size=self.kernel_size,
@@ -39,16 +42,16 @@ class ConvLayer(object):
 
 
 class DenseLayer(object):
-    def __init__(self, layer: Dict[str, Any], input_size: int, channels_in: int):
+    def __init__(self, layer: Dense, input_size: int, channels_in: int):
         self.type: str = "Convolution"
-        self.mat_size: float = float(input_size)
-        self.kernel_size: int = input_size
+        self.mat_size: float = float(input_size) if input_size else 1
+        self.kernel_size: int = input_size if input_size else 1
         self.channels_in: int = channels_in
-        self.channels_out: int = layer["units"]
+        self.channels_out: int = layer.units
         self.strides: int = 1
-        self.padding: int = "same" if input_size == 1 else "valid"
+        self.padding: str = "same" if input_size == 1 else "valid"
         self.use_bias: bool = True
-        self.activation = _get_activation_name(layer["activation"])
+        self.activation = _get_activation_name(layer.activation)
         self.output_size: int = 1
 
 
