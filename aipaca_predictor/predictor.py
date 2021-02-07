@@ -4,12 +4,26 @@ from aipaca_predictor.layers import ConvLayer
 from aipaca_predictor.layers import DenseLayer
 import requests
 import json
+from typing import List
+from typing import Optional
+from tensorflow.python.client import device_lib
+from tensorflow.core.framework.device_attributes_pb2 import DeviceAttributes
 
 
-def to_predict(model, batch_size: int, gpu_name: str, optimizer: str = "adam") -> int:
+SUPPORT_GPU_TYPES = {"1080Ti", "K40", "K80", "M60", "P100", "T4", "V100"}
+
+
+def to_predict(model, batch_size: int, optimizer: str = "adam") -> int:
     """
     Given a keras model and hardware specs, output the estimated training time
     """
+    gpu_name = _find_gpu_type()
+    if not gpu_name:
+        print(f"Your GPU is not supported. not one of {SUPPORT_GPU_TYPES}")
+        return
+
+    print(f"Detected that you have {gpu_name}")
+
     dnn = parse_cnn(model.layers)
 
     data = {
@@ -63,3 +77,12 @@ def parse_cnn(model_layers):
         dnn.add_layer(layer_name=layer_name, layer_type=layer.type, **vars(layer))
 
     return dnn
+
+
+def _find_gpu_type() -> Optional[str]:
+    local_device_protos: List[DeviceAttributes] = device_lib.list_local_devices()
+    for device in local_device_protos:
+        for gpu_type in SUPPORT_GPU_TYPES:
+            if gpu_type.upper() in device.physical_device_desc.upper():
+                return gpu_type
+    return None
