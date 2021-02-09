@@ -13,7 +13,7 @@ from tensorflow.core.framework.device_attributes_pb2 import DeviceAttributes
 SUPPORT_GPU_TYPES = {"1080Ti", "K40", "K80", "M60", "P100", "T4", "V100"}
 
 
-def to_predict(model, batch_size: int, optimizer: str = "adam") -> int:
+def to_predict(model, batch_size: int, iterations: int, optimizer: str = "sgd") -> int:
     """
     Given a keras model and hardware specs, output the estimated training time
     """
@@ -29,6 +29,7 @@ def to_predict(model, batch_size: int, optimizer: str = "adam") -> int:
     data = {
         "dnn": dnn,
         "batch_size": batch_size,
+        "iterations": iterations,
         "optimizer": optimizer,
         "gpu_name": gpu_name,
     }
@@ -47,7 +48,7 @@ def parse_cnn(model_layers):
         size = input_shape[1]
     # Vector or flattened image
     else:
-        size = input_shape[0]
+        size = input_shape[0] if input_shape[0] else 1
     num_channel = input_shape[-1]
     previous_channel = num_channel
     previous_output_size = size
@@ -68,14 +69,14 @@ def parse_cnn(model_layers):
                 input_size=previous_output_size,
                 channels_in=previous_channel,
             )
-        elif layer_class_name == "Flatten":
-            continue
         elif layer_class_name == "Dense":
             layer = DenseLayer(
                 layer=layer,
                 input_size=previous_output_size,
                 channels_in=previous_channel,
             )
+        else:
+            continue
         previous_channel = layer.channels_out
         previous_output_size = layer.output_size
         dnn.add_layer(layer_name=layer_name, layer_type=layer.type, **vars(layer))

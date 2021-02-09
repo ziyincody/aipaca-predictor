@@ -43,12 +43,14 @@ class ConvLayer(object):
 
 class DenseLayer(object):
     def __init__(self, layer: Dense, input_size: int, channels_in: int):
+        # Assume d
         self.type: str = "Convolution"
         self.mat_size: float = float(input_size) if input_size else 1
         self.kernel_size: int = input_size if input_size else 1
         self.channels_in: int = channels_in
         self.channels_out: int = layer.units
         self.strides: int = 1
+        # Because output_size always 1, thus same iff input_size is also 1
         self.padding: str = "same" if input_size == 1 else "valid"
         self.use_bias: bool = True
         self.activation = _get_activation_name(layer.activation)
