@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
-VERSION = "0.0.6"
+VERSION = "0.0.8"
 DESCRIPTION = "Aipaca Neural Nets Training Time Predictor"
-LONG_DESCRIPTION = "Very fast model training time predictor. (Currently supports Feed forward and Conv Nets)"
+LONG_DESCRIPTION = (
+    "Very fast model training time predictor. (Currently supports Keras Model)"
+)
 
 # Setting up
 setup(

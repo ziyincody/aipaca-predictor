@@ -1,6 +1,4 @@
 class DNN(dict):
-    """Class for deep neural network architecture"""
-
     def __init__(self, input_dimension, input_size):
         self["layers"] = {}
         self["input"] = {}

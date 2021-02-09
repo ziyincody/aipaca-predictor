@@ -15,14 +15,14 @@ SUPPORT_GPU_TYPES = {"1080Ti", "K40", "K80", "M60", "P100", "T4", "V100"}
 
 def to_predict(model, batch_size: int, iterations: int, optimizer: str = "sgd") -> int:
     """
-    Given a keras model and hardware specs, output the estimated training time
+    Given a Keras model, batch_size, iterations and optimizer, output the estimated training time
     """
     gpu_name = _find_gpu_type()
     if not gpu_name:
         print(f"Your GPU is not supported. not one of {SUPPORT_GPU_TYPES}")
         return
 
-    print(f"Detected that you have {gpu_name}")
+    print(f"Detected that you use {gpu_name} GPU")
 
     dnn = parse_cnn(model.layers)
 
